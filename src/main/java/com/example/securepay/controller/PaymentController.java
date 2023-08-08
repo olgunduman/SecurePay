@@ -1,7 +1,6 @@
 package com.example.securepay.controller;
 
 import com.example.securepay.dto.PaymentResponse;
-import com.example.securepay.entity.Payment;
 import com.example.securepay.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/payment")
