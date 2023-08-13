@@ -1,10 +1,7 @@
 package com.example.securepay.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -13,7 +10,8 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @Builder
-@Data
+@Getter
+@Setter
 @Table(name = "payment")
 @Entity
 @NoArgsConstructor
@@ -22,7 +20,7 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

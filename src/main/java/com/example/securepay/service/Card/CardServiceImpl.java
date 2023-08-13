@@ -19,26 +19,26 @@ public class CardServiceImpl implements CardService {
 
     private final CardRepository cardRepository;
     private final CustomerRepository customerRepository;
-    private final ModelMapper modelMapper;
 
 
     @Override
     public CardResponse createCardForCustomer(Long customerId, String cardNumber) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        Optional<Card> existingCard = cardRepository.findByCustomer(customer);
-        if (existingCard.isPresent()) {
-            log.error("Card already exists for this customer");
-            throw new IllegalArgumentException("Card for customer " + customer.getName() + " already exists");
+        Optional<Card> existingCard = cardRepository.findByCardNumber(cardNumber);
+        if(existingCard.isPresent()){
+            log.error("Card number already exist");
+            throw new RuntimeException("Card number already exist");
         }
-
-        cardNumberControl(cardNumber);
-
+       isCardNumberExist(cardNumber);
         Card card = new Card();
         card.setCardNumber(cardNumber);
         card.setCustomer(customer);
-
         cardRepository.save(card);
+
+        customer.getCard().add(card);
+        customerRepository.save(customer);
+
         CardResponse cardResponse = new CardResponse();
         cardResponse.setId(card.getId());
         cardResponse.setCardNumber(card.getCardNumber());
@@ -49,15 +49,11 @@ public class CardServiceImpl implements CardService {
 
     }
 
-    private void cardNumberControl(String cardNumber) {
-        if(isCardNumberExist(cardNumber)){
-            log.error("Card number already exist");
-            throw new RuntimeException("Card number already exist");
-        }
-    }
+
 
     private boolean isCardNumberExist(String cardNumber) {
        var cardList = cardRepository.findAll();
        return cardList.stream().anyMatch(card -> card.getCardNumber().equals(cardNumber));
     }
+
 }

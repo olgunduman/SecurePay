@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,6 @@ import javax.persistence.EntityNotFoundException;
 public class CustomerServiceImpl implements CustomerService{
 
     private final CustomerRepository customerRepository;
-    private final CardRepository cardRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -29,14 +29,10 @@ public class CustomerServiceImpl implements CustomerService{
             log.error("Email already exist");
             throw new RuntimeException("Email already exist");
         }
-
-
         Customer customer = modelMapper.map(customerRequest, Customer.class);
         customerRepository.save(customer);
 
         return customer.getId();
-
-
 
     }
 
@@ -45,12 +41,7 @@ public class CustomerServiceImpl implements CustomerService{
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new EntityNotFoundException("Customer with ID " + customerId + " not found"));
 
-        Card card = cardRepository.findByCustomer(customer)
-                .orElse(null); // Eğer kart yoksa null olarak ayarlanır
 
-        if (card != null) {
-            customer.setCard(card);
-        }
         CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
 
         log.info("CustomerResponse: {}", customerResponse);

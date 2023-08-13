@@ -1,20 +1,20 @@
 package com.example.securepay.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Builder
-@Data
 @Table(name = "customer")
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+
 public class Customer {
 
     @Id
@@ -28,7 +28,7 @@ public class Customer {
     @Email(message = "Email should be valid")
     private String email;
 
-    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
-    private Card card;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Card> card;
 
 }

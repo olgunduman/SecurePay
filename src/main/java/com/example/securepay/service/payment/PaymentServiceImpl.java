@@ -29,19 +29,18 @@ public class PaymentServiceImpl implements PaymentService{
     public PaymentResponse createPayment(Long customerId, BigDecimal amount) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new EntityNotFoundException("Customer with ID " + customerId + " not found"));
-
         // Ödeme tutarı 0'dan büyük olmalı
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Payment amount must be greater than zero");
         }
-
         Payment payment = new Payment();
         payment.setCustomer(customer);
         payment.setAmount(amount);
         payment.setPaymentDate(new Date());
 
         paymentRepository.save(payment);
-        return modelMapper.map(payment, PaymentResponse.class);
+        PaymentResponse response = modelMapper.map(payment, PaymentResponse.class);
+      return response;
 
     }
 
