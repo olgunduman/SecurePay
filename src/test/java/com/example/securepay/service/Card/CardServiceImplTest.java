@@ -89,10 +89,7 @@ class CardServiceImplTest {
         CardResponse response = cardServiceImpl.createCardForCustomer(customer.getId(), card.getCardNumber());
         assertEquals(response.getCardNumber(), card.getCardNumber());
     }
-    @Test
-    public void createCardForCustomer_whenCardNumberControl_thenThrowException() {
 
-    }
 
 
 }

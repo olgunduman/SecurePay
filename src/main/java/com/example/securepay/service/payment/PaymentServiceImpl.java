@@ -27,9 +27,12 @@ public class PaymentServiceImpl implements PaymentService{
     private final CardRepository cardRepository;
     private final ModelMapper modelMapper;
     public PaymentResponse createPayment(Long customerId, BigDecimal amount) {
+        log.info("PaymentRequest: customerId: {}, amount: {}", customerId, amount);
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new EntityNotFoundException("Customer with ID " + customerId + " not found"));
+
         // Ödeme tutarı 0'dan büyük olmalı
+        log.info("Amount control : {}", amount.compareTo(BigDecimal.ZERO));
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Payment amount must be greater than zero");
         }
@@ -39,29 +42,26 @@ public class PaymentServiceImpl implements PaymentService{
         payment.setPaymentDate(new Date());
 
         paymentRepository.save(payment);
+        log.info("Payment saved: {}", payment);
         PaymentResponse response = modelMapper.map(payment, PaymentResponse.class);
+        log.info("PaymentResponse: {}", response);
       return response;
 
     }
-
-
-
-
     @Override
     public List<PaymentResponse> getPaymentsByCustomerOrCard(Long customerId, String cardNumber) {
+        log.info("PaymentRequest: customerId: {}, cardNumber: {}", customerId, cardNumber);
     List<Payment> payments = new ArrayList<>();
 
         cardNumberControl(cardNumber, payments);
         customerIdControl(customerId, payments);
-
+         log.info("Payments: {}", payments);
     List<PaymentResponse> paymentResponses = payments.stream()
             .map(payment -> modelMapper.map(payment, PaymentResponse.class))
             .distinct()
             .collect(Collectors.toList());
-log.info("PaymentResponses: {}", paymentResponses);
+        log.info("PaymentResponses: {}", paymentResponses);
     return paymentResponses;
-
-
 
     }
 
@@ -85,11 +85,13 @@ log.info("PaymentResponses: {}", paymentResponses);
 }
     @Override
     public List<PaymentResponse> getPaymentsByDateRange(Date startDate, Date endDate) {
+        log.info("PaymentRequest: startDate: {}, endDate: {}", startDate, endDate);
         List<Payment> byPaymentDateBetween = paymentRepository.findByPaymentDateBetween(startDate, endDate);
         List<PaymentResponse> paymentResponses = byPaymentDateBetween.stream()
                 .map(payment -> modelMapper.map(payment, PaymentResponse.class))
                 .distinct()
                 .collect(Collectors.toList());
+        log.info("PaymentResponses: {}", paymentResponses);
         return paymentResponses;
 }
 }

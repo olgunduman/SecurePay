@@ -25,37 +25,32 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public long createCustomer(CustomerRequest customerRequest) {
 
+        log.info("CustomerRequest: {}", customerRequest);
+
+        log.info("Email control : {}", isEmailExist(customerRequest.getEmail()));
+
         if(isEmailExist(customerRequest.getEmail())){
             log.error("Email already exist");
             throw new RuntimeException("Email already exist");
         }
+        log.info("Email is unique");
         Customer customer = modelMapper.map(customerRequest, Customer.class);
         customerRepository.save(customer);
-
+        log.info("Customer saved: {}", customer);
         return customer.getId();
-
     }
-
     @Override
     public CustomerResponse getCustomerWithCardInfo(Long customerId) {
+        log.info("customer control : {} ", customerId);
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new EntityNotFoundException("Customer with ID " + customerId + " not found"));
 
-
         CustomerResponse customerResponse = modelMapper.map(customer, CustomerResponse.class);
-
         log.info("CustomerResponse: {}", customerResponse);
         return customerResponse;
-
-
     }
-
-
     private boolean isEmailExist(String email) {
         var customerList= customerRepository.findAll();
         return customerList.stream().anyMatch(customer -> customer.getEmail().equals(email));
     }
-
-
-
 }

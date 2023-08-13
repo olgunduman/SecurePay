@@ -23,6 +23,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public CardResponse createCardForCustomer(Long customerId, String cardNumber) {
+        log.info("Creating card for customer with id {}", customerId);
         Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new RuntimeException("Customer not found"));
 
         Optional<Card> existingCard = cardRepository.findByCardNumber(cardNumber);
@@ -38,11 +39,13 @@ public class CardServiceImpl implements CardService {
 
         customer.getCard().add(card);
         customerRepository.save(customer);
+        log.info("Card created successfully");
 
         CardResponse cardResponse = new CardResponse();
         cardResponse.setId(card.getId());
         cardResponse.setCardNumber(card.getCardNumber());
         cardResponse.setCustomer(card.getCustomer().getId());
+        log.info("Card response created successfully : " + cardResponse);
 
         return cardResponse;
 
@@ -53,7 +56,9 @@ public class CardServiceImpl implements CardService {
 
     private boolean isCardNumberExist(String cardNumber) {
        var cardList = cardRepository.findAll();
+       log.info("Card list : " + cardList);
        return cardList.stream().anyMatch(card -> card.getCardNumber().equals(cardNumber));
+
     }
 
 }
